@@ -6,7 +6,7 @@ fn main() {
     let mut cfg = gcc::Config::new();
     cfg.include("VEX/pub")
        .include("VEX/priv")
-       .opt_level(3)
+       //.opt_level(3)
        .debug(true);
     for filename in fs::read_dir("VEX/priv").unwrap(){
         let filename = filename.unwrap().path();

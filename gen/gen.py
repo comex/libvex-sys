@@ -1,7 +1,7 @@
 # This script is released to the public domain.
 
 import subprocess, re, os
-pub = '/usr/src/tob-libvex/VEX/pub'
+pub = 'VEX/pub'
 
 # add #define constants as enums
 enum_constants = 'enum XxxConstants {\n'
@@ -66,7 +66,6 @@ for source, dest in replacements:
 output = output.replace('pub _bindgen_bitfield_1_: IREffect,', 'pub fx: u16,')
 output = output.replace('pub status: Enum_Unnamed65,', 'pub status: u32,')
 output = '''
-#![feature(braced_empty_structs, libc, negate_unsigned)]
 #![allow(non_snake_case, non_upper_case_globals, non_camel_case_types)]
 extern crate libc;
 ''' + output
@@ -76,6 +75,18 @@ assert 'Unnamed' not in output
 
 output = output.replace('XxxTheConstant', '')
 
-open('../src/lib.rs', 'w').write(output)
+output = re.sub('pub struct ([^ ]*) {\n}', 'pub struct \\1;', output)
+
+output = re.sub('(?<=::libc::c_uint = )-([0-9]+)', lambda m: str(2**32 - int(m.group(1))), output)
+
+# Make handy submodules
+for prefix in ('Iop', 'Iex', 'Ico'):
+    names = set(re.findall('const (%s_[a-zA-Z0-9_]+)' % (prefix,), output))
+    output += 'pub mod %sConsts {\n' % (prefix,)
+    for name in names:
+        output += '    pub use ::%s;\n' % (name,)
+    output += '}\n'
+
+open('src/lib.rs', 'w').write(output)
 
 os.unlink('inc.h')
