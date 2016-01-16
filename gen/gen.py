@@ -1,7 +1,7 @@
 # This script is released to the public domain.
 
 import subprocess, re, os
-pub = 'VEX/pub'
+pub = 'libvex-tob/VEX/pub'
 
 # add #define constants as enums
 enum_constants = 'enum XxxConstants {\n'

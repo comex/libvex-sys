@@ -1,0 +1,3 @@
+[submodule "libvex-tob"]
+	path = libvex-tob
+	url = https://github.com/trailofbits/libvex.git
